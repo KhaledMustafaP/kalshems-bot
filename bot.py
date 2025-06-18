@@ -29,11 +29,11 @@ async def send_daily_ward():
     today = datetime.now()
     hizb_number = (today.day % 60) + 1
     message = f"📖 ورد اليوم من القرآن الكريم:\nالحزب رقم {hizb_number}\nلا تنس قراءة وردك اليومي ✨"
-    await app.bot.send_message(chat_id=CHANNEL_ID, text=message)
+    await app.bot.send_message(chat_id=CHAT_ID, text=message)
 
 async def send_poll():
     await app.bot.send_poll(
-        chat_id=CHANNEL_ID,
+        chat_id=CHAT_ID,
         question="📊 هل قرأت وردك القرآني اليوم؟",
         options=["✅ نعم قرأت", "❌ لا للأسف"],
         is_anonymous=False
@@ -47,7 +47,7 @@ app.add_handler(CommandHandler("start", start))
 # ===== جدولة المهام =====
 def schedule_tasks():
     schedule.every().day.at("08:00").do(lambda: asyncio.create_task(send_daily_ward()))
-    schedule.every().day.at("20:00").do(lambda: asyncio.create_task(send_poll()))
+    schedule.every().day.at("21:08").do(lambda: asyncio.create_task(send_poll()))
 
 async def scheduler_loop():
     while True:
