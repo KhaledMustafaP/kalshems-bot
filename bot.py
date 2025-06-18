@@ -26,7 +26,7 @@ app = Application.builder().token(BOT_TOKEN).build()
 
 # ===== دوال البوت =====
 async def send_daily_ward():
-    today = datetime.now()
+    today = datetime.utcnow()  # استخدم UTC لأننا نضبط الوقت عليه
     hizb_number = (today.day % 60) + 1
     message = f"📖 ورد اليوم من القرآن الكريم:\nالحزب رقم {hizb_number}\nلا تنس قراءة وردك اليومي ✨"
     await app.bot.send_message(chat_id=CHAT_ID, text=message)
@@ -44,10 +44,12 @@ async def start(update, context):
 
 app.add_handler(CommandHandler("start", start))
 
-# ===== جدولة المهام =====
+# ===== جدولة المهام حسب UTC =====
 def schedule_tasks():
-    schedule.every().day.at("08:00").do(lambda: asyncio.create_task(send_daily_ward()))
-    schedule.every().day.at("21:08").do(lambda: asyncio.create_task(send_poll()))
+    # 08:00 صباحًا بتوقيت الأردن = 05:00 UTC
+    schedule.every().day.at("05:00").do(lambda: asyncio.create_task(send_daily_ward()))
+    # 09:00 مساءً بتوقيت الأردن = 18:00 UTC
+    schedule.every().day.at("18:15").do(lambda: asyncio.create_task(send_poll()))
 
 async def scheduler_loop():
     while True:
