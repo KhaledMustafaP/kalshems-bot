@@ -83,6 +83,7 @@ async def main():
     bot = Bot(token=BOT_TOKEN)
 
     await bot.send_message(chat_id=CHAT_ID, text="🌞 هذا اختبار إرسال من البوت للقناة!")
+    await bot.send_poll(chat_id=CHAT_ID, question="هل قرأت وردك؟", options=["✅ نعم", "❌ لا"], is_anonymous=False)
 
     schedule_tasks()
     asyncio.create_task(scheduler_loop())
