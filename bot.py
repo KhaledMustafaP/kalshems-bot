@@ -79,6 +79,8 @@ def run_web():
 
 # ===== التشغيل =====
 async def main():
+    bot = Bot(token=BOT_TOKEN)
+
     await bot.send_message(chat_id=CHAT_ID, text="🌞 هذا اختبار إرسال من البوت للقناة!")
 
     schedule_tasks()
