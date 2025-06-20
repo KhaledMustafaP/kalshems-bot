@@ -79,6 +79,8 @@ def run_web():
 
 # ===== التشغيل =====
 async def main():
+    await bot.send_message(chat_id=CHAT_ID, text="🌞 هذا اختبار إرسال من البوت للقناة!")
+
     schedule_tasks()
     asyncio.create_task(scheduler_loop())
     threading.Thread(target=run_web).start()
