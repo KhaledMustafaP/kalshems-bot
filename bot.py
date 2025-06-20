@@ -39,13 +39,7 @@ async def send_daily_ward():
     next_juz = juz_number + 1 if juz_number < 30 else 1
     write_juz(next_juz)
 
-async def send_poll():
-    await app.bot.send_poll(
-        chat_id=CHAT_ID,
-        question="📊 هل قرأت وردك اليومي؟",
-        options=["✅ نعم قرأت", "❌ لا للأسف"],
-        is_anonymous=False
-    )
+
 
 # ===== الأوامر =====
 async def start(update, context):
@@ -60,8 +54,7 @@ app.add_handler(CommandHandler("reset", reset))
 
 # ===== الجدولة =====
 def schedule_tasks():
-    schedule.every().day.at("05:00").do(lambda: asyncio.create_task(send_daily_ward()))  # 8 صباحاً بتوقيت الأردن
-    schedule.every().day.at("18:00").do(lambda: asyncio.create_task(send_poll()))        # 6 مساءً بتوقيت الأردن
+    schedule.every().day.at("18:55").do(lambda: asyncio.create_task(send_daily_ward()))  # 8 صباحاً بتوقيت الأردن
 
 async def scheduler_loop():
     while True:
@@ -83,8 +76,6 @@ async def main():
     bot = Bot(token=BOT_TOKEN)
 
     await bot.send_message(chat_id=CHAT_ID, text="🌞 هذا اختبار إرسال من البوت للقناة!")
-    await bot.send_poll(chat_id=CHAT_ID, question="هل قرأت وردك؟", options=["✅ نعم", "❌ لا"], is_anonymous=False)
-
     schedule_tasks()
     asyncio.create_task(scheduler_loop())
     threading.Thread(target=run_web).start()
