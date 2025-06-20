@@ -3,60 +3,71 @@ import asyncio
 import nest_asyncio
 import schedule
 from datetime import datetime
-from telegram import Bot
 from telegram.ext import Application, CommandHandler
 from flask import Flask
 import threading
 
-# 🔑 استبدل هذا بالتوكن الخاص فيك من BotFather
+# ===== إعدادات أساسية =====
 BOT_TOKEN = '7104783346:AAGtSznA02gw8eIq8Y1zbaHWsPLCjHPCoCY'
-CHAT_ID = 5523094937  # ID القناة أو الشخص
+CHAT_ID = '@wahmidf'
 
-# ===== إعدادات اللوج =====
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+# ===== اللوج =====
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-# ===== تفعيل nest_asyncio لحل مشكلة event loop =====
 nest_asyncio.apply()
-
-# ===== إنشاء تطبيق التليجرام =====
 app = Application.builder().token(BOT_TOKEN).build()
 
-# ===== دوال البوت =====
+# ===== التعامل مع ملف الجزء =====
+def read_juz():
+    try:
+        with open("progress.txt", "r") as file:
+            return int(file.read().strip())
+    except:
+        return 1
+
+def write_juz(juz):
+    with open("progress.txt", "w") as file:
+        file.write(str(juz))
+
+# ===== المهام اليومية =====
 async def send_daily_ward():
-    today = datetime.utcnow()  # استخدم UTC لأننا نضبط الوقت عليه
-    hizb_number = (today.day % 60) + 1
-    message = f"📖 ورد اليوم من القرآن الكريم:\nالحزب رقم {hizb_number}\nلا تنس قراءة وردك اليومي ✨"
+    juz_number = read_juz()
+    message = f"📖 الورد اليومي: الجزء ({juz_number})\nلا تنسى قراءة وردك لليوم ✨💙"
     await app.bot.send_message(chat_id=CHAT_ID, text=message)
+
+    next_juz = juz_number + 1 if juz_number < 30 else 1
+    write_juz(next_juz)
 
 async def send_poll():
     await app.bot.send_poll(
         chat_id=CHAT_ID,
-        question="📊 هل قرأت وردك القرآني اليوم؟",
+        question="📊 هل قرأت وردك اليومي؟",
         options=["✅ نعم قرأت", "❌ لا للأسف"],
         is_anonymous=False
     )
 
+# ===== الأوامر =====
 async def start(update, context):
     await update.message.reply_text("أهلاً بك! هذا بوت ورد كالشمس 🌞📖")
 
-app.add_handler(CommandHandler("start", start))
+async def reset(update, context):
+    write_juz(1)
+    await update.message.reply_text("✅ تم إعادة العداد إلى الجزء 1")
 
-# ===== جدولة المهام حسب UTC =====
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("reset", reset))
+
+# ===== الجدولة =====
 def schedule_tasks():
-    # 08:00 صباحًا بتوقيت الأردن = 05:00 UTC
-    schedule.every().day.at("05:00").do(lambda: asyncio.create_task(send_daily_ward()))
-    # 09:00 مساءً بتوقيت الأردن = 18:00 UTC
-    schedule.every().day.at("18:15").do(lambda: asyncio.create_task(send_poll()))
+    schedule.every().day.at("05:00").do(lambda: asyncio.create_task(send_daily_ward()))  # 8 صباحاً بتوقيت الأردن
+    schedule.every().day.at("18:00").do(lambda: asyncio.create_task(send_poll()))        # 6 مساءً بتوقيت الأردن
 
 async def scheduler_loop():
     while True:
         schedule.run_pending()
         await asyncio.sleep(60)
 
-# ===== Web Server باستخدام Flask =====
+# ===== Web Server ليدعمه UptimeRobot أو Ping =====
 flask_app = Flask(__name__)
 
 @flask_app.route('/')
@@ -66,11 +77,11 @@ def home():
 def run_web():
     flask_app.run(host="0.0.0.0", port=10000)
 
-# ===== تشغيل كل إشي =====
+# ===== التشغيل =====
 async def main():
     schedule_tasks()
     asyncio.create_task(scheduler_loop())
-    threading.Thread(target=run_web).start()  # تشغيل السيرفر على ثريد منفصل
+    threading.Thread(target=run_web).start()
     await app.run_polling()
 
 if __name__ == "__main__":
