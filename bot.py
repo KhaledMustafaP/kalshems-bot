@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from telegram import Bot
 import nest_asyncio
 import schedule
 from datetime import datetime
