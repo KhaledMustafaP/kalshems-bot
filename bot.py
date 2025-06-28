@@ -10,7 +10,7 @@ import threading
 
 # ===== إعدادات أساسية =====
 BOT_TOKEN = '7104783346:AAGtSznA02gw8eIq8Y1zbaHWsPLCjHPCoCY'
-CHAT_ID = '@wahmidf'
+CHAT_ID = '@shamsju'
 
 # ===== اللوج =====
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -54,7 +54,7 @@ app.add_handler(CommandHandler("reset", reset))
 
 # ===== الجدولة =====
 def schedule_tasks():
-    schedule.every().day.at("18:55").do(lambda: asyncio.create_task(send_daily_ward()))  # 8 صباحاً بتوقيت الأردن
+    schedule.every().day.at("06:00").do(lambda: asyncio.create_task(send_daily_ward()))  # 8 صباحاً بتوقيت الأردن
 
 async def scheduler_loop():
     while True:
