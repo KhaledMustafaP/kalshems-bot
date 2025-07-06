@@ -20,7 +20,7 @@ app = Application.builder().token(BOT_TOKEN).build()
 
 # ===== الرسالة اليومية =====
 async def send_daily_ward():
-    message = "🌸 وردك اليومي: لا تنسَ أن تتلو آياتك اليوم بقلبٍ خاشع 💫"
+    message = "📖 قال الحسن البصري : نزل القرآن ليُتدبر ويُعمل به، فاتخذوا تلاوته عملاً\nلا تنسى قراءة وردك لليوم ✨"
     await app.bot.send_message(chat_id=CHAT_ID, text=message)
 
 # ===== الأوامر =====
@@ -31,7 +31,7 @@ app.add_handler(CommandHandler("start", start))
 
 # ===== الجدولة =====
 def schedule_tasks():
-    schedule.every().day.at("06:00").do(lambda: asyncio.create_task(send_daily_ward()))  # 6 صباحاً بتوقيت السيرفر
+    schedule.every().day.at("07:00").do(lambda: asyncio.create_task(send_daily_ward()))  # 6 صباحاً بتوقيت السيرفر
 
 async def scheduler_loop():
     while True:
